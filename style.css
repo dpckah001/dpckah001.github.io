@@ -1,0 +1,189 @@
+/* 全局样式 */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #000;
+    color: #00FFDD;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* 使背景效果不滚动 */
+}
+
+/* 导航栏样式 */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    border-bottom: 2px solid #00FFDD;
+    z-index: 1; /* 确保在其他元素之上 */
+}
+
+.navbar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.navbar ul li {
+    margin: 10px;
+}
+
+.navbar ul li a {
+    color: #00FFDD;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 10px;
+}
+
+.navbar ul li a:hover {
+    text-decoration: underline;
+}
+
+/* 数据流背景效果 */
+.data-stream {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    z-index: -1; /* 放在背景层 */
+    background: #000; /* 确保背景为黑色 */
+}
+
+.data-stream::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 255, 221, 0.2) 0%,
+        rgba(0, 255, 221, 0.1) 50%,
+        rgba(0, 255, 221, 0.2) 100%
+    );
+    background-size: 100% 20px;
+    animation: dataStream 3s linear infinite;
+}
+
+@keyframes dataStream {
+    from {
+        background-position: 0% 0%;
+    }
+    to {
+        background-position: 0% 100%;
+    }
+}
+
+/* 3D骰子样式 */
+.dice {
+    width: 200px;
+    height: 200px;
+    position: relative;
+    transform-style: preserve-3d;
+    transform: rotateX(0deg) rotateY(0deg);
+    animation: rotateDice 10s infinite linear;
+    margin: 50px auto;
+    transition: transform 0.5s;
+}
+
+.face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 255, 221, 0.3);
+    border: 2px solid #00FFDD;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    color: #00FFDD;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* 面的位置 */
+.face1 { transform: rotateY(0deg) translateZ(100px); }
+.face2 { transform: rotateY(90deg) translateZ(100px); }
+.face3 { transform: rotateY(180deg) translateZ(100px); }
+.face4 { transform: rotateY(270deg) translateZ(100px); }
+.face5 { transform: rotateX(90deg) translateZ(100px); }
+.face6 { transform: rotateX(-90deg) translateZ(100px); }
+
+@keyframes rotateDice {
+    from {
+        transform: rotateX(0deg) rotateY(0deg);
+    }
+    to {
+        transform: rotateX(360deg) rotateY(360deg);
+    }
+}
+
+/* 动态网络节点地图样式 */
+#network-map {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 300px;
+    height: 300px;
+    background-color: rgba(0, 0, 0, 0.8);
+    border: 2px solid #00FFDD;
+}
+
+/* Markdown 内容样式 */
+.markdown-content {
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 800px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #00FFDD;
+    border-radius: 8px;
+    color: #00FFDD;
+}
+
+/* Markdown 标题样式 */
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3 {
+    color: #00FFDD;
+}
+
+/* Markdown 链接样式 */
+.markdown-content a {
+    color: #00FFDD;
+}
+
+.markdown-content a:hover {
+    text-decoration: underline;
+}
+
+/* Markdown 代码块样式 */
+.markdown-content pre {
+    background: #111;
+    padding: 10px;
+    border-radius: 5px;
+    color: #00FFDD;
+}
+/* 博客内容样式 */
+.blog-content {
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 800px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #00FFDD;
+    border-radius: 8px;
+    color: #00FFDD;
+}
+
+/* 确保其他样式保持不变 */
+
+.passage {
+    color: #00FFDD;
+    font-size: 18px;
+    font-family: 'Courier New', Courier, monospace;
+}
