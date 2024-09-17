@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>个人博客</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.12/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
     <!-- 导航栏 -->
@@ -21,25 +22,29 @@
 
     <!-- 数据流背景 -->
     <div class="data-stream"></div>
-    <br><br><br><br>
-    <!-- 3D骰子 -->
-    <div id="dice" class="dice">
-        <div class="face face1">About</div>
-        <div class="face face2">Contact</div>
-        <div class="face face3">Projects</div>
-        <div class="face face4">Blog</div>
-        <div class="face face5">Home</div>
-        <div class="face face6">More</div>
-    </div>
 
-    <!-- 网络节点地图 -->
-    <div id="network-map"></div>
+    <!-- 主要内容区域 -->
+    <main>
+        <br><br>
+        <!-- 3D骰子 -->
+        <div id="dice" class="dice">
+            <div class="face face1">Python</div>
+            <div class="face face2">Html</div>
+            <div class="face face3">Code</div>
+            <div class="face face4">Internet</div>
+            <div class="face face5">DPCK</div>
+            <div class="face face6">Brave</div>
+        </div>
+        <br><br>
+        <!-- Markdown 内容容器 -->
+        <div id="markdown-content" class="markdown-content">
+            <p style="font-family: sans-serif;">HELLO VISITOR</p>
+        </div>
 
-    <!-- Markdown 内容容器 -->
-    <div id="markdown-content" class="markdown-content"><p style="font-family: sans-serif;">HELLO VISITOR</p></div>
+        <!-- 动态网络节点地图 -->
+        <div id="network-map"></div>
+    </main>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="script.js"></script>
-    <script src="markdown.js"></script>
 </body>
 </html>

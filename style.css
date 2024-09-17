@@ -170,7 +170,7 @@ body {
     color: #00FFDD;
 }
 /* 博客内容样式 */
-.blog-content {
+.markdown-content {
     margin: 20px auto;
     padding: 20px;
     max-width: 800px;
@@ -186,4 +186,166 @@ body {
     color: #00FFDD;
     font-size: 18px;
     font-family: 'Courier New', Courier, monospace;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #000;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #00FFDD;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #00CCAA;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .markdown-content {
+        margin: 10px;
+        padding: 10px;
+    }
+
+    .navbar ul {
+        flex-direction: column;
+    }
+
+    .dice {
+        width: 150px;
+        height: 150px;
+    }
+}
+
+/* 改进文本可读性 */
+.markdown-content p {
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+}
+
+/* 优化代码块样式 */
+.markdown-content pre {
+    background: #111;
+    padding: 15px;
+    border-radius: 5px;
+    color: #00FFDD;
+    overflow-x: auto;
+    border-left: 4px solid #00FFDD;
+}
+
+.markdown-content code {
+    font-family: 'Courier New', Courier, monospace;
+}
+
+/* 链接过渡效果 */
+.markdown-content a {
+    color: #00FFDD;
+    transition: color 0.3s ease;
+}
+
+.markdown-content a:hover {
+    color: #00CCAA;
+    text-decoration: none;
+}
+
+/* 添加一些动画效果 */
+@keyframes glowText {
+    0% { text-shadow: 0 0 5px #00FFDD; }
+    50% { text-shadow: 0 0 20px #00FFDD; }
+    100% { text-shadow: 0 0 5px #00FFDD; }
+}
+
+.markdown-content h1 {
+    animation: glowText 2s infinite;
+}
+
+/* 改进整体布局 */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.markdown-content {
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* 添加页脚样式 */
+footer {
+    background: rgba(0, 0, 0, 0.7);
+    color: #00FFDD;
+    text-align: center;
+    padding: 10px 0;
+    border-top: 2px solid #00FFDD;
+}
+
+.crt-container {
+    position: relative;
+    overflow: hidden;
+    background: #000;
+    border: 2px solid #00FFDD;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #00FFDD;
+}
+
+.crt-effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(rgba(0, 255, 221, 0.1) 50%, rgba(0, 0, 0, 0.1) 50%);
+    background-size: 100% 4px;
+    z-index: 2;
+    pointer-events: none;
+    animation: flicker 0.15s infinite;
+}
+
+.crt-effect::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 255, 221, 0.1);
+    z-index: 2;
+    pointer-events: none;
+    animation: scanline 6s linear infinite;
+}
+
+@keyframes flicker {
+    0% {
+        opacity: 0.9;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.9;
+    }
+}
+
+@keyframes scanline {
+    0% {
+        transform: translateY(-100%);
+    }
+    100% {
+        transform: translateY(100%);
+    }
+}
+.markdown-content {
+    position: relative;
+    z-index: 1;
+    padding: 20px;
+    color: #00FFDD;
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
 }

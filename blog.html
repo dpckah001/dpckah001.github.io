@@ -1,32 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>博客 - 个人博客</title>
+    <title>博客文章 - 个人博客</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        console.log('Marked library loaded:', typeof marked !== 'undefined');
+        console.log('Marked object:', marked);
+        console.log('Marked parse function:', marked.parse);
+        
+        // 确保 marked 正确初始化
+        if (typeof marked !== 'undefined') {
+            window.markdownParser = marked.parse;
+        } else {
+            console.error('Marked library not loaded correctly');
+        }
+    </script>
+    <script src="markdown.js"></script>
 </head>
 <body>
+    <!-- 数据流背景 -->
+    <div class="data-stream"></div>
+
     <!-- 导航栏 -->
     <nav class="navbar">
         <ul>
-            <li><a href="index.html#home">首页</a></li>
-            <li><a href="index.html#about">关于我</a></li>
-            <li><a href="index.html#projects">项目</a></li>
-            <li><a href="blog.html">博客</a></li>
-            <li><a href="index.html#contact">联系我</a></li>
+            <li><a href="index.html">返回首页</a></li>
         </ul>
     </nav>
+    <br><br>
+    <!-- 主要内容区域 -->
+    <main>
+        <!-- Markdown 内容容器 -->
+        <div class="crt-container">
+            <div class="crt-effect"></div>
+            <div class="markdown-content" id="markdown-content">
+                <!-- 这里不需要任何初始内容 -->
+            </div>
+        </div>
+    </main>
 
-    <!-- 数据流背景 -->
-    <div class="data-stream"></div>
-    <br><br><br><br>
-    <!-- 博客内容容器 -->
-    <div id="blog-content" class="blog-content">
-        <!-- Markdown 内容将显示在这里 -->
-    </div>
-    <!-- 你的 JavaScript 文件 -->
-    <script src="markdown.js"></script>
+    <script>
+        console.log('Body loaded, markdown-content element exists:', !!document.getElementById('markdown-content'));
+    </script>
 </body>
 </html>
