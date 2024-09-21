@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 将尾焰元素添加到页面
         document.body.appendChild(trailElement);
 
-        // 动画结束后移除元素
+        // 结束后移除元素
         setTimeout(() => {
             trailElement.remove();
         }, 2000); // 尾焰动画持续2秒
