@@ -21,9 +21,10 @@
     <script src="markdown.js"></script>
 </head>
 <body>
+    <div class="crt-overlay"></div>
+
     <!-- 数据流背景 -->
     <div class="data-stream"></div>
-
     <!-- 导航栏 -->
     <nav class="navbar">
         <ul>
@@ -32,18 +33,57 @@
     </nav>
     <br><br>
     <!-- 主要内容区域 -->
-    <main>
-        <!-- Markdown 内容容器 -->
-        <div class="crt-container">
-            <div class="crt-effect"></div>
-            <div class="markdown-content" id="markdown-content">
-                <!-- 这里不需要任何初始内容 -->
+    <div class="content-wrapper">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <h2>Markdown 文件</h2>
+            <ul>
+                <li><a href="#" data-file="notdiamond.md">Not Diamond</a></li>
+                <li><a href="#" data-file="Tor_use.md">Tor use</a></li>
+                <li><a href="#" data-file="file3.md">文件 3</a></li>
+                <!-- 添加更多文件链接 -->
+            </ul>
+        </aside>
+        <!-- 主内容 -->
+        <main class="main-content">
+            <!-- Markdown 内容容器 -->
+            <div class="crt-container">
+                <div class="crt-effect"></div>
+                <div class="markdown-content" id="markdown-content">
+                    <!-- 这里不需要任何初始内容 -->
+                </div>
             </div>
-        </div>
-    </main>
-
+        </main>
+    </div>
     <script>
         console.log('Body loaded, markdown-content element exists:', !!document.getElementById('markdown-content'));
+
+        // 添加侧边栏链接点击事件
+        document.querySelectorAll('.sidebar a').forEach(link => {
+            link.addEventListener('click', (event) => {
+                event.preventDefault();
+                const file = event.target.getAttribute('data-file');
+                loadMarkdownFile(file);
+            });
+        });
+
+        function loadMarkdownFile(file) {
+            fetch(file)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('网络响应不正常');
+                    }
+                    return response.text();
+                })
+                .then(text => {
+                    const html = window.markdownParser(text);
+                    document.getElementById('markdown-content').innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('加载 Markdown 文件时出错:', error);
+                    document.getElementById('markdown-content').textContent = '加载内容时出错: ' + error.message;
+                });
+        }
     </script>
 </body>
 </html>

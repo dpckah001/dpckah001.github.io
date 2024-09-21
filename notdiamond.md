@@ -12,6 +12,6 @@ THIS IS　**Not Diamond**
 
 1.　确保自己有可用的梯子或魔法（可以看）。
 1.　打开　https://www.notdiamond.ai/　，并注册一下账号。
-1.　随后打开　https://chat.notdiamond.ai/　，即可开始聊天（成功界面如下）。![](images/notdiamond成功界面.PNG)
+1.　随后打开　https://chat.notdiamond.ai/　，即可开始聊天（成功界面如下）。![](notdiamondsuccessful.PNG)
 
 4.享受自己的额度吧，每月刷新。

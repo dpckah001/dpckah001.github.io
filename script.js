@@ -67,4 +67,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     setInterval(updateOnlineUsers, 5000); // 每5秒更新一次在线人数数据
+
+    // 创建二进制尾焰效果
+    document.addEventListener('mousemove', (event) => {
+        // 创建二进制尾焰
+        const trailElement = document.createElement('span');
+        trailElement.textContent = Math.random() > 0.5 ? '0' : '1'; // 随机生成0或1
+        trailElement.classList.add('trail');
+
+        // 设置元素的初始位置为鼠标当前位置
+        trailElement.style.left = `${event.pageX}px`;
+        trailElement.style.top = `${event.pageY}px`;
+
+        // 将尾焰元素添加到页面
+        document.body.appendChild(trailElement);
+
+        // 动画结束后移除元素
+        setTimeout(() => {
+            trailElement.remove();
+        }, 2000); // 尾焰动画持续2秒
+    });
 });
