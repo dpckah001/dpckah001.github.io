@@ -1,42 +1,41 @@
 # ============================================
-#  DEDSEC // WATCH DOGS 2 THEME CONFIGURATION
+#  DPCK THEME — 2019 SHELL / DEDSEC CORE
 # ============================================
 
-# --- Site Settings ---
 title: "VoidByte Notes"
 email: u2074426447@163.com
 description: >-
-  This is a platform to provide expreience.
+  Field notes from the operator's terminal.
 baseurl: ""
 url: "https://dpckah001.github.io"
 
-# --- DedSec Theme Settings ---
+dpck:
+  # shell (2019) — readable, layered dark
+  bg_color: "#0c0d0f"
+  panel_color: "#15171a"
+  panel_color_2: "#1b1e22"
+  border_color: "#2a2e34"
+  text_primary: "#e6ebf2"     # cold white
+  text_secondary: "#7d8694"
+  radius: "4px"               # tight, not pillowy
 
-# --- DedSec Theme Settings ---
-dedsec:
-  accent_color: "#D62728"
-  secondary_color: "#888888"
+  # core (dedsec) — signal & semantics
+  accent_color: "#D62728"     # your signature red
+  cold_white: "#dfe7ef"
+  status_ok: "#5fb38a"        # terminal [OK]
+  status_warn: "#d9a441"      # terminal [WARN]
+
+  # behaviour
   glitch_intensity: "high"
   show_scanlines: true
+  show_grid: true
+  show_noise: true
   terminal_cursor: true
-  # ✅ 修复：使用数组代替 | 块标量，彻底避免缩进解析问题
-  ascii_logo:
-    - "____  _____ ____  _____"
-    - "|  _ \\| ____|  _ \\/ ___|"
-    - "| | | |  _| | | | \\___ \\"
-    - "| |_| | |___| |_| |___) |"
-    - "|____/|_____|____/|____/"
-
-
-# --- Build Settings ---
-# ⚠️ 移除 minima，使用自定义主题不需要 theme 字段
-# theme: minima  ← 已禁用
 
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
 
-# --- Exclude from processing ---
 exclude:
   - .sass-cache/
   - .jekyll-cache/
@@ -44,9 +43,6 @@ exclude:
   - Gemfile
   - Gemfile.lock
   - node_modules/
-  - vendor/bundle/
-  - vendor/cache/
-  - vendor/gems/
-  - vendor/ruby/
+  - vendor/
   - README.md
   - LICENSE

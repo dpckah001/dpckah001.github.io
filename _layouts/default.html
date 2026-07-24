@@ -1,48 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ page.title }} | {{ site.title }}</title>
-  <link rel="stylesheet" href="{{ '/assets/css/dedsec.css' | relative_url }}">
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+  <title>{% if page.title %}{{ page.title }} // {% endif %}{{ site.title }}</title>
+  <meta name="description" content="{{ page.excerpt | default: site.description | strip_html | strip | truncate: 150 }}">
 
-  <link rel="icon" type="image/svg+xml" href="{{ '/favicon.svg' | relative_url }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --accent:{{ site.dpck.accent_color }};
+      --cold:{{ site.dpck.cold_white }};
+      --ok:{{ site.dpck.status_ok }};
+    }
+  </style>
+  <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
+  {% seo %}
+  {% feed_meta %}
 </head>
-<body class="{% if site.dedsec.show_scanlines %}scanlines{% endif %}">
-  
-  <!-- CRT Overlay -->
-  <div class="crt-overlay"></div>
-  
-  <!-- Navigation -->
-  <nav class="dedsec-nav">
-	<div class="ascii-logo">
-{% for line in site.dedsec.ascii_logo %}{{ line }}
-{% endfor %}
-	</div>
-    <ul>
-      <li><a href="{{ '/' | relative_url }}" data-text="[ HOME ]">[ HOME ]</a></li>
-      <li><a href="{{ '/about' | relative_url }}" data-text="[ MANIFESTO ]">[ MANIFESTO ]</a></li>
-      <li><a href="{{ '/ops' | relative_url }}" data-text="[ OPERATIONS ]">[ OPERATIONS ]</a></li>
-      <li><a href="{{ '/blog' | relative_url }}" data-text="[ DATA_LOGS ]">[ DATA_LOGS ]</a></li>
-    </ul>
-  </nav>
+<body>
+  <div class="bg-fx"></div>
+  {% include hud.html %}
 
-  <!-- Main Content -->
-  <main class="dedsec-container">
-    <h1 class="glitch" data-text="{{ page.title }}">{{ page.title }}</h1>
-    <div class="content-block">
+  <div class="shell">
+    <div class="container">
       {{ content }}
+
+      <footer class="site-foot">
+        <span>&copy; {{ 'now' | date: "%Y" }} {{ site.title }}</span>
+        <span>// DPCK_THEME · 2019-shell / dedsec-core</span>
+        <span style="margin-left:auto">session closed<span class="cur"></span></span>
+      </footer>
     </div>
-  </main>
+  </div>
 
-  <!-- Footer -->
-  <footer class="dedsec-footer">
-    <p>> SYSTEM_STATUS: <span class="status-online">ONLINE</span></p>
-    <p>> JOIN_US: #DEDSEC // WE_ARE_LEGION</p>
-    <p class="copyright">&copy; {{ 'now' | date: "%Y" }} DEDSEC COLLECTIVE. NO RIGHTS RESERVED.</p>
-  </footer>
-
-  <script src="{{ '/assets/js/glitch.js' | relative_url }}"></script>
+  <script src="{{ '/assets/js/search.js' | relative_url }}" defer></script>
+  <script src="{{ '/assets/js/main.js' | relative_url }}" defer></script>
 </body>
 </html>

@@ -1,0 +1,191 @@
+/* ===================== HUD status bar (echoes your waybar) ===================== */
+.hud {
+  position: fixed; top: 0; left: 0; right: 0; height: 34px; z-index: 9000;
+  display: flex; align-items: center; gap: 1rem;
+  padding: 0 1rem;
+  background: rgba(12,13,15,.82);
+  border-bottom: 1px solid $border;
+  box-shadow: 0 1px 0 rgba(214,39,40,.35);
+  font-family: $mono; font-size: .72rem; letter-spacing: .5px;
+  color: $text-dim; text-transform: uppercase;
+  -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); // tiny area only
+}
+.hud .brand { color: $cold; font-weight: 700; }
+.hud .brand b { color: $accent; }
+.hud .sep { color: #3a3f47; }
+.hud .dot {
+  width: 7px; height: 7px; border-radius: 50%; background: $ok;
+  box-shadow: 0 0 8px $ok; animation: pulse 1.8s $ease infinite;
+}
+.hud .right { margin-left: auto; display: flex; align-items: center; gap: .9rem; }
+.hud .clock { color: $cold; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.25} }
+
+/* ===================== layout shell ===================== */
+.container { max-width: 820px; margin: 0 auto; padding: 2.4rem 1.4rem 1rem; }
+
+.site-head { margin: 1rem 0 2.4rem; }
+.site-head .kicker {
+  font-family: $mono; font-size: .72rem; letter-spacing: 3px;
+  color: $accent; text-transform: uppercase; margin-bottom: .6rem;
+}
+.site-head h1 { font-size: clamp(2rem, 6vw, 3.1rem); color: $cold; }
+.site-head .lede { color: $text-dim; max-width: 52ch; margin-top: .5rem; }
+
+/* ===================== boot sequence (the opening — not a hero) ===================== */
+.boot {
+  font-family: $mono; font-size: .82rem; line-height: 1.9;
+  color: $text-dim; margin: 0 0 2.6rem;
+  border-left: 2px solid $border; padding-left: 1rem;
+}
+.boot .ln { opacity: 0; animation: bootIn .01s forwards; }
+.boot .ln:nth-child(1){animation-delay:.15s} .boot .ln:nth-child(2){animation-delay:.45s}
+.boot .ln:nth-child(3){animation-delay:.75s} .boot .ln:nth-child(4){animation-delay:1.05s}
+.boot .ln:nth-child(5){animation-delay:1.35s} .boot .ln:nth-child(6){animation-delay:1.7s}
+@keyframes bootIn { to { opacity: 1; } }
+.boot .ok   { color: $ok; }
+.boot .warn { color: $warn; }
+.boot .ptr  { color: $accent; }
+.boot .cur  { display:inline-block; width:.55em; height:1em; background:$accent;
+              vertical-align:-2px; margin-left:2px; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ===================== search (terminal prompt, 2019 box) ===================== */
+.search {
+  position: relative; margin: 0 0 2.6rem;
+}
+.search .bar {
+  display: flex; align-items: center; gap: .6rem;
+  background: $panel; border: 1px solid $border; border-radius: $radius;
+  padding: .7rem .9rem; transition: border-color .2s, box-shadow .2s;
+}
+.search .bar:focus-within {
+  border-color: $accent; box-shadow: 0 0 0 1px rgba(214,39,40,.25), $shadow;
+}
+.search .prompt { font-family: $mono; color: $accent; font-size: .85rem; white-space: nowrap; }
+.search input {
+  flex: 1; background: transparent; border: 0; outline: 0;
+  color: $text; font-family: $mono; font-size: .95rem;
+}
+.search input::placeholder { color: #4a505a; }
+#search-results {
+  position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 50;
+  background: $panel-2; border: 1px solid $border; border-radius: $radius;
+  box-shadow: $shadow; overflow: hidden; display: none;
+}
+#search-results.open { display: block; }
+#search-results a {
+  display: block; padding: .65rem .9rem; color: $text;
+  background-image: none; border-left: 2px solid transparent;
+  font-family: $mono; font-size: .85rem;
+}
+#search-results a:hover { background: rgba(214,39,40,.08); border-left-color: $accent; color: $cold; }
+#search-results .meta { color: $text-dim; font-size: .72rem; }
+#search-results .empty { padding: .8rem .9rem; color: $text-dim; font-family: $mono; font-size: .82rem; }
+
+/* ===================== post feed (manifest, not equal cards) ===================== */
+.feed-head {
+  font-family: $mono; font-size: .72rem; letter-spacing: 2px; color: $text-dim;
+  text-transform: uppercase; margin: 0 0 1rem;
+  display: flex; align-items: center; gap: .6rem;
+}
+.feed-head::after { content:""; flex:1; height:1px; background: $border; }
+
+.post {
+  position: relative; display: grid;
+  grid-template-columns: 64px 1fr auto; gap: .2rem 1rem; align-items: baseline;
+  padding: 1.1rem 1rem 1.1rem 1.2rem; margin-bottom: .7rem;
+  background: $panel; border: 1px solid $border; border-radius: $radius;
+  border-left: 2px solid transparent;
+  transition: transform .25s $ease, border-color .25s, background .25s;
+}
+.post::before { /* index code in the gutter */
+  content: attr(data-id); grid-row: 1 / span 2; grid-column: 1;
+  font-family: $mono; font-size: .72rem; color: #3f454e; align-self: center;
+}
+.post:hover {
+  transform: translateX(4px); background: $panel-2;
+  border-left-color: $accent;
+}
+.post .stamp { font-family: $mono; font-size: .72rem; color: $text-dim; grid-column: 2; }
+.post .stamp .code { color: $ok; }
+.post h2 { grid-column: 2; font-size: 1.2rem; margin: .15rem 0 0; }
+.post h2 a { color: $cold; background-image: none; }
+.post:hover h2 a { color: $accent; }
+.post .tags { grid-column: 2; margin-top: .45rem; display: flex; flex-wrap: wrap; gap: .35rem; }
+.post .tag {
+  font-family: $mono; font-size: .66rem; letter-spacing: .5px; text-transform: uppercase;
+  color: $text-dim; border: 1px solid $border; border-radius: 3px; padding: .1em .5em;
+  transition: color .2s, border-color .2s;
+}
+.post:hover .tag { border-color: #3a3f47; }
+.post .arrow {
+  grid-column: 3; grid-row: 1 / span 3; align-self: center;
+  font-family: $mono; color: #3f454e; transition: color .2s, transform .2s;
+}
+.post:hover .arrow { color: $accent; transform: translateX(3px); }
+
+/* ===================== glitch (low-frequency, dedsec core) ===================== */
+.glitch { position: relative; display: inline-block; }
+.glitch::before, .glitch::after {
+  content: attr(data-text); position: absolute; inset: 0;
+  clip-path: inset(0 0 0 0); opacity: 0;
+}
+.glitch::before { color: $accent; }
+.glitch::after  { color: $cold; }
+.glitch:hover::before, .glitch.on::before {
+  opacity: .9; animation: g1 2.4s steps(2) infinite;
+}
+.glitch:hover::after, .glitch.on::after {
+  opacity: .9; animation: g2 2.4s steps(2) infinite;
+}
+@keyframes g1 {
+  0%,92%,100%{ transform: translate(0); clip-path: inset(0 0 100% 0); opacity:0 }
+  93%{ transform: translate(-2px,1px); clip-path: inset(10% 0 60% 0); opacity:.9 }
+  96%{ transform: translate(2px,-1px); clip-path: inset(50% 0 20% 0); opacity:.9 }
+}
+@keyframes g2 {
+  0%,92%,100%{ transform: translate(0); clip-path: inset(0 0 100% 0); opacity:0 }
+  94%{ transform: translate(2px,1px); clip-path: inset(30% 0 40% 0); opacity:.9 }
+  97%{ transform: translate(-2px,-1px); clip-path: inset(70% 0 5% 0); opacity:.9 }
+}
+
+/* ===================== post page ===================== */
+.read-bar { position: fixed; top: 34px; left: 0; height: 2px; width: 100%;
+  background: $accent; transform: scaleX(0); transform-origin: left; z-index: 9500; }
+.article { max-width: 720px; }
+.article .meta-row {
+  font-family: $mono; font-size: .74rem; color: $text-dim;
+  display: flex; flex-wrap: wrap; gap: .4rem 1rem; margin-bottom: 1.4rem;
+  padding-bottom: 1rem; border-bottom: 1px dashed $border;
+}
+.article .meta-row .ok { color: $ok; }
+.article h1 { font-size: clamp(1.7rem, 5vw, 2.5rem); color: $cold; margin-bottom: .4rem; }
+.article h2 { margin: 2.2rem 0 .8rem; color: $cold; font-size: 1.35rem;
+  border-left: 3px solid $accent; padding-left: .7rem; }
+.article h3 { margin: 1.6rem 0 .6rem; color: $cold; font-size: 1.1rem; }
+.article p { margin: 1rem 0; }
+.article ul, .article ol { margin: 1rem 0 1rem 1.4rem; }
+.article li { margin: .3rem 0; }
+.article blockquote {
+  border-left: 2px solid $accent; background: $panel; margin: 1.4rem 0;
+  padding: .6rem 1rem; color: $text-dim; border-radius: 0 $radius $radius 0;
+}
+.article img { max-width: 100%; border: 1px solid $border; border-radius: $radius; }
+.back { font-family: $mono; font-size: .8rem; display: inline-block; margin: 2.5rem 0 1rem; }
+
+/* ===================== footer (session end) ===================== */
+.site-foot {
+  margin-top: 4rem; padding: 1.6rem 0 3rem;
+  border-top: 1px solid $border;
+  font-family: $mono; font-size: .74rem; color: $text-dim;
+  display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; align-items: center;
+}
+.site-foot .cur { display:inline-block; width:.5em; height:1em; background:$accent;
+  vertical-align:-2px; animation: blink 1s steps(1) infinite; }
+
+@media (max-width: 560px) {
+  .post { grid-template-columns: 1fr auto; }
+  .post::before { display: none; }
+  .post .stamp, .post h2, .post .tags { grid-column: 1; }
+}

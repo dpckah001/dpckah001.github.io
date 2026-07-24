@@ -1,0 +1,30 @@
+---
+layout: default
+title: Index
+---
+<header class="site-head">
+  <div class="kicker">// operator log · est. 2019</div>
+  <h1><span class="glitch" data-text="VoidByte Notes">VoidByte Notes</span></h1>
+  <p class="lede">{{ site.description }}</p>
+</header>
+
+{% include boot.html %}
+{% include search.html %}
+
+<div class="feed-head"><span>manifest.log</span><span>{{ site.posts.size }} entries</span></div>
+
+{% for post in site.posts %}
+<article class="post reveal" data-id="{{ forloop.index | prepend: '00' | slice: -3, 3 }}">
+  <div class="stamp">
+    {{ post.date | date: "%Y-%m-%d" }}
+    <span class="code">[0x{{ forloop.index | modulo: 255 | plus: 16 }}]</span>
+  </div>
+  <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+  {% if post.tags %}
+  <div class="tags">
+    {% for t in post.tags limit:4 %}<span class="tag">#{{ t }}</span>{% endfor %}
+  </div>
+  {% endif %}
+  <span class="arrow">-&gt;</span>
+</article>
+{% endfor %}
