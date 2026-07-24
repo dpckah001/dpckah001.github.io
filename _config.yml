@@ -1,0 +1,52 @@
+# ============================================
+#  DEDSEC // WATCH DOGS 2 THEME CONFIGURATION
+# ============================================
+
+# --- Site Settings ---
+title: "VoidByte Notes"
+email: u2074426447@163.com
+description: >-
+  This is a platform to provide expreience.
+baseurl: ""
+url: "https://dpckah001.github.io"
+
+# --- DedSec Theme Settings ---
+
+# --- DedSec Theme Settings ---
+dedsec:
+  accent_color: "#D62728"
+  secondary_color: "#888888"
+  glitch_intensity: "high"
+  show_scanlines: true
+  terminal_cursor: true
+  # ✅ 修复：使用数组代替 | 块标量，彻底避免缩进解析问题
+  ascii_logo:
+    - "____  _____ ____  _____"
+    - "|  _ \\| ____|  _ \\/ ___|"
+    - "| | | |  _| | | | \\___ \\"
+    - "| |_| | |___| |_| |___) |"
+    - "|____/|_____|____/|____/"
+
+
+# --- Build Settings ---
+# ⚠️ 移除 minima，使用自定义主题不需要 theme 字段
+# theme: minima  ← 已禁用
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+# --- Exclude from processing ---
+exclude:
+  - .sass-cache/
+  - .jekyll-cache/
+  - gemfiles/
+  - Gemfile
+  - Gemfile.lock
+  - node_modules/
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+  - README.md
+  - LICENSE

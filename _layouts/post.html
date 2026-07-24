@@ -1,0 +1,23 @@
+---
+layout: default
+---
+<article class="dedsec-post">
+  <header class="post-header">
+    <span class="post-meta">// TIMESTAMP: {{ page.date | date: "%Y-%m-%d %H:%M" }}</span>
+    <h2 class="glitch" data-text="{{ page.title }}">{{ page.title }}</h2>
+    {% if page.tags %}
+    <div class="post-tags">
+      {% for tag in page.tags %}<span class="tag">[{{ tag }}]</span>{% endfor %}
+    </div>
+    {% endif %}
+  </header>
+
+  <div class="content-block post-content">
+    {{ content }}
+  </div>
+
+  <footer class="post-footer">
+    <p>> END_OF_TRANSMISSION</p>
+    <p>> AUTHOR: {{ page.author | default: "ANONYMOUS" }}</p>
+  </footer>
+</article>

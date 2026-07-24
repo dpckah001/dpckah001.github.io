@@ -1,0 +1,24 @@
+---
+layout: default
+---
+<section class="dedsec-home">
+  <div class="terminal-prompt">
+    <p>> INITIALIZING DEDSEC BLOG NETWORK...</p>
+    <p>> LOADING RECENT OPERATIONS...</p>
+    <p>> STATUS: <span class="status-online">READY</span></p>
+  </div>
+
+  <ul class="post-list">
+    {% for post in site.posts %}
+    <li class="post-item">
+      <span class="post-date">[{{ post.date | date: "%Y-%m-%d" }}]</span>
+      <a href="{{ post.url | relative_url }}" class="post-link" data-text="{{ post.title }}">
+        {{ post.title }}
+      </a>
+      {% if post.excerpt %}
+      <p class="post-excerpt">{{ post.excerpt | strip_html | truncatewords: 20 }}</p>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+</section>
