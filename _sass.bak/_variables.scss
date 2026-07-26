@@ -1,0 +1,23 @@
+// ---- 2019 冷灰极简深色 ----
+$bg:        #0f1114;
+$panel:     #181b20;
+$panel-2:   #1e2228;
+$border:    #2c3138;
+$text:      #e2e7ef;
+$text-dim:  #848c99;
+$radius:    3px;
+
+// ---- 低饱和冷蓝，替代 DedSec 红 ----
+$accent:    #4088e0;
+$cold:      #f0f4fa;
+$ok:        #64a886;
+$warn:      #cfa048;
+
+// ---- 字体：标题去科技感，等宽仅做点缀 ----
+$display: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+$body:    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", Helvetica, Arial, sans-serif;
+$mono:    "JetBrains Mono", "SF Mono", Consolas, monospace;
+
+// ---- 注意：函数名与括号之间绝不能有空格 ----
+$shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+$ease:   cubic-bezier(0.2, 0.7, 0.2, 1);

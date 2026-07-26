@@ -7,11 +7,13 @@ layout: default
   <a class="back" href="{{ '/' | relative_url }}">&lt; cd ..</a>
   <div class="meta-row">
     <span>{{ page.date | date: "%Y-%m-%d" }}</span>
-    <span class="ok">[decrypted]</span>
+    <span class="ok">[ok]</span>
     {% if page.tags %}<span>{% for t in page.tags %}#{{ t }} {% endfor %}</span>{% endif %}
   </div>
 
-  <h1><span class="glitch" data-text="{{ page.title }}">{{ page.title }}</span></h1>
+  <h1>{{ page.title }}</h1>
 
   {{ content }}
+
+  {% include giscus.html %}
 </article>

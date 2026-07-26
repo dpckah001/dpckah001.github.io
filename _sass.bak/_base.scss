@@ -10,57 +10,72 @@ body {
   line-height: 1.75;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  padding-top: 40px;            // 给 HUD 留位
+  padding-top: 34px; /* 给固定 HUD 留位 */
+  position: relative;
   min-height: 100vh;
 }
 
+/* 网格 / 扫描线 / 噪点暗角：按 2019 诉求全部移除，纯底色 */
+
 .shell { position: relative; z-index: 2; }
 
-h1,h2,h3,h4 {
+/* ---------- 文字 ---------- */
+h1, h2, h3, h4 {
   font-family: $display;
   font-weight: 600;
+  letter-spacing: 0.1px;
   line-height: 1.2;
-  letter-spacing: -0.01em;
 }
 
 a {
   color: $accent;
-  text-decoration: none;
-  &:hover { text-decoration: underline; color: $cold; }
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s $ease;
 }
+a:hover { color: $cold; }
 
-::selection { background: $accent; color: #fff; }
+::selection { background: $accent; color: #000; }
 
 pre, code, kbd { font-family: $mono; }
 
 code {
-  background: rgba(255,255,255,.06);
+  background: rgba(255, 255, 255, 0.05);
   border: 1px solid $border;
-  padding: .1em .4em;
-  font-size: .88em;
+  padding: 0.1em 0.4em;
+  border-radius: $radius;
+  font-size: 0.88em;
   color: $cold;
 }
 
 pre {
-  background: #0a0a0a;
+  background: $panel;
   border: 1px solid $border;
   border-left: 2px solid $accent;
+  border-radius: $radius;
   padding: 1rem 1.1rem;
   overflow-x: auto;
-  font-size: .85rem;
+  font-size: 0.85rem;
   line-height: 1.6;
   margin: 1.4rem 0;
 }
 pre code { background: none; border: 0; padding: 0; }
 
-::-webkit-scrollbar { width: 8px; height: 8px; }
+/* ---------- 滚动条（2019 常见细节，保留） ---------- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: $bg; }
-::-webkit-scrollbar-thumb { background: #333; border: 1px solid $bg; }
+::-webkit-scrollbar-thumb {
+  background: #2f343b;
+  border: 2px solid $bg;
+  border-radius: 6px;
+}
 ::-webkit-scrollbar-thumb:hover { background: $accent; }
 
+/* ---------- 滚动渐入（克制版） ---------- */
 .reveal {
-  opacity: 0; transform: translateY(10px);
-  transition: opacity .4s $ease, transform .4s $ease;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.4s $ease, transform 0.4s $ease;
 }
 .reveal.in { opacity: 1; transform: none; }
 
