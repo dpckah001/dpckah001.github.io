@@ -1,0 +1,12 @@
+---
+layout: post
+title:  "7.31 返璞归真没想到"
+date:   2026-07-31 22:00:00 +0800
+categories: 日常笔记
+tags: [随笔]
+---
+
+装回windows了，linux还是有点不适合。
+Linux下烧录windows启动盘最合适的方法还是用ventory。而不是woeusb,或者其他的整半天结果是烧录有问题。
+
+Link: <https://www.bilibili.com/video/BV17tGT6nEdD/>
