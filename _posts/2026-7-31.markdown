@@ -2,8 +2,8 @@
 layout: post
 title:  "7.31 返璞归真没想到"
 date:   2026-07-31 22:00:00 +0800
-categories: 日常笔记
-tags: [随笔]
+categories: daily
+tags: [随笔,linux,windows]
 ---
 
 装回windows了，linux还是有点不适合。

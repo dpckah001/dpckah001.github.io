@@ -2,7 +2,8 @@
 layout: post
 title:  "FIRST TIME"
 date:   2026-07-24 10:26:53 +0800
-categories: jekyll update
+categories: daily
+tags: [随笔]
 ---
 
 ### 前缘

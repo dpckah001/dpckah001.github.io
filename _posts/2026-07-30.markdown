@@ -2,7 +2,7 @@
 layout: post
 title:  "7.30 Record"
 date:   2026-07-30 21:14:00 +0800
-categories: 日常笔记
+categories: daily
 tags: [随笔]
 ---
 
