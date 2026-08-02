@@ -4,10 +4,24 @@
   if (!input || !box) return;
   var data = [];
 
-  fetch((window.__baseurl || '') + '/search.json')
-    .then(function (r) { return r.json(); })
-    .then(function (d) { data = d; })
-    .catch(function () {});
+  // Try fetching search index from a few sensible locations.
+  var fetchIndex = function () {
+    var base = window.__baseurl || '';
+    var paths = [base + '/search.json', base + 'search.json', '/search.json', 'search.json'];
+    return paths.reduce(function (p, url) {
+      return p.catch(function () {
+        return fetch(url).then(function (r) {
+          if (!r.ok) throw new Error('bad status ' + r.status);
+          return r.json();
+        });
+      });
+    }, Promise.reject()).catch(function (err) {
+      console.error('search index load failed:', err);
+      return [];
+    });
+  };
+
+  fetchIndex().then(function (d) { data = d || []; });
 
   function esc(s) {
     return String(s).replace(/[&<>"]/g, function (c) {
@@ -18,13 +32,19 @@
   function render(q) {
     q = q.trim().toLowerCase();
     if (!q) { box.classList.remove('open'); box.innerHTML = ''; return; }
+    if (!Array.isArray(data) || !data.length) {
+      box.innerHTML = '<div class="empty">&gt; 无搜索索引 — 请稍后重试</div>';
+      box.classList.add('open');
+      return;
+    }
     var hits = data.filter(function (p) {
-      return p.title.toLowerCase().indexOf(q) > -1 ||
-             p.body.toLowerCase().indexOf(q) > -1;
-    }).slice(0, 6);
+      var title = (p.title || '').toString().toLowerCase();
+      var body = (p.body || '').toString().toLowerCase();
+      return title.indexOf(q) > -1 || body.indexOf(q) > -1;
+    }).slice(0, 8);
 
     if (!hits.length) {
-      box.innerHTML = '<div class="empty">&gt; no match — target not found</div>';
+      box.innerHTML = '<div class="empty">&gt; 未找到匹配结果</div>';
     } else {
       box.innerHTML = hits.map(function (p) {
         return '<a role="option" href="' + p.url + '">&gt; ' + esc(p.title) +

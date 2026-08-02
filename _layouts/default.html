@@ -5,6 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% if page.title %}{{ page.title }} | {% endif %}{{ site.title }}</title>
   <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
+  <script>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem('site-theme');
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var isDark = stored === 'dark' || (!stored && prefersDark);
+        if (isDark) document.body.classList.add('dark-mode');
+      } catch (e) {
+        // ignore storage access errors
+      }
+    })();
+  </script>
 </head>
 <body>
   {% include hud.html %}
@@ -12,5 +24,6 @@
     {{ content }}
   </div>
   {% include footer.html %}
+  <script src="{{ '/assets/js/main.js' | relative_url }}"></script>
 </body>
 </html>

@@ -1,11 +1,11 @@
 <header class="hud">
-  <div class="brand"><b>■</b> {{ site.title | default: "BLOG" }}</div>
+  <div class="brand"><b>◼</b> {{ site.title | default: "BLOG" }}</div>
   <span class="sep">|</span>
-  <span class="dot"></span>
-  <span>online</span>
+  <span>archive</span>
   <nav class="right">
     <a href="{{ '/' | relative_url }}">HOME</a>
     <a href="{{ '/about' | relative_url }}">ABOUT</a>
     <a href="{{ '/tags' | relative_url }}">TAGS</a>
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="切换亮暗模式">🌙</button>
   </nav>
 </header>

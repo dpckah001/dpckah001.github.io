@@ -4,15 +4,17 @@ title: About
 permalink: /about/
 ---
 
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](https://jekyllrb.com/)
+Welcome to a quiet corner of the web.
 
-You can find the source code for Minima at GitHub:
-[jekyll][jekyll-organization] /
-[minima](https://github.com/jekyll/minima)
+This site is a personal archive of notes, experiments, and memories from the early days of building a blog. It is designed to feel like an old notebook: simple, deliberate, and easy to read.
 
-You can find the source code for Jekyll at GitHub:
-[jekyll][jekyll-organization] /
-[jekyll](https://github.com/jekyll/jekyll)
+Here you will find:
 
+- stories about learning technology and programming
+- notes on hardware, software, and system setup
+- reflections on growth, school, and curiosity
 
-[jekyll-organization]: https://github.com/jekyll
+The theme is intentionally nostalgic: muted tones, paper-like spacing, and a calm vintage feel.
+
+If you are interested, feel free to explore the posts and discover the journey behind each article.
+
