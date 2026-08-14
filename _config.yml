@@ -1,0 +1,48 @@
+# ============================================
+#  DPCK THEME — 2019 SHELL / DEDSEC CORE
+# ============================================
+
+title: "VoidByte Notes"
+email: u2074426447@163.com
+description: >-
+  Field notes from the operator's terminal.
+baseurl: ""
+url: "https://dpckah001.github.io"
+
+dpck:
+  # shell (2019) — readable, layered dark
+  bg_color: "#0c0d0f"
+  panel_color: "#15171a"
+  panel_color_2: "#1b1e22"
+  border_color: "#2a2e34"
+  text_primary: "#e6ebf2"     # cold white
+  text_secondary: "#7d8694"
+  radius: "4px"               # tight, not pillowy
+
+  # core (dedsec) — signal & semantics
+  accent_color: "#D62728"     # your signature red
+  cold_white: "#dfe7ef"
+  status_ok: "#5fb38a"        # terminal [OK]
+  status_warn: "#d9a441"      # terminal [WARN]
+
+  # behaviour
+  glitch_intensity: "high"
+  show_scanlines: true
+  show_grid: true
+  show_noise: true
+  terminal_cursor: true
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+exclude:
+  - .sass-cache/
+  - .jekyll-cache/
+  - gemfiles/
+  - Gemfile
+  - Gemfile.lock
+  - node_modules/
+  - vendor/
+  - README.md
+  - LICENSE

@@ -1,0 +1,260 @@
+/* ===== HUD 顶栏（简化：去毛玻璃、去红光阴影、去脉冲动画） ===== */
+.hud {
+  position: fixed; top: 0; left: 0; right: 0; height: 34px; z-index: 9000;
+  display: flex; align-items: center; gap: 1rem;
+  padding: 0 1rem;
+  background: rgba(15, 17, 20, 0.92);
+  border-bottom: 1px solid $border;
+  font-family: $mono; font-size: 0.72rem; letter-spacing: 0.5px;
+  color: $text-dim; text-transform: uppercase;
+}
+.hud .brand { color: $cold; font-weight: 700; }
+.hud .brand b { color: $accent; }
+.hud .sep { color: #3a3f47; }
+.hud .dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: $ok; box-shadow: 0 0 4px $ok; /* 静态点，不呼吸 */
+}
+.hud .right { margin-left: auto; display: flex; align-items: center; gap: 0.9rem; }
+.hud .clock { color: $cold; }
+
+/* ===== 布局容器 ===== */
+.container { max-width: 820px; margin: 0 auto; padding: 2.4rem 1.4rem 1rem; }
+
+.site-head { margin: 1rem 0 2.4rem; }
+.site-head .kicker {
+  font-family: $mono; font-size: 0.72rem; letter-spacing: 3px;
+  color: $accent; text-transform: uppercase; margin-bottom: 0.6rem;
+}
+.site-head h1 { font-size: clamp(2rem, 6vw, 3.1rem); color: $cold; }
+.site-head .lede { color: $text-dim; max-width: 52ch; margin-top: 0.5rem; }
+
+/* ===== Boot 文本块（静态，不逐行闪现、不闪光标） ===== */
+.boot {
+  font-family: $mono; font-size: 0.82rem; line-height: 1.9;
+  color: $text-dim; margin: 0 0 2.6rem;
+  border-left: 2px solid $border; padding-left: 1rem;
+}
+.boot .ok   { color: $ok; }
+.boot .warn { color: $warn; }
+.boot .ptr  { color: $accent; }
+
+/* ===== 搜索框（弱化终端感） ===== */
+.search { position: relative; margin: 0 0 2.6rem; }
+.search .bar {
+  display: flex; align-items: center; gap: 0.6rem;
+  background: $panel; border: 1px solid $border; border-radius: $radius;
+  padding: 0.7rem 0.9rem; transition: border-color 0.2s $ease;
+}
+.search .bar:focus-within { border-color: $accent; }
+.search .prompt { font-family: $mono; color: $accent; font-size: 0.85rem; white-space: nowrap; }
+.search input {
+  flex: 1; background: transparent; border: 0; outline: 0;
+  color: $text; font-family: $mono; font-size: 0.95rem;
+}
+.search input::placeholder { color: #4a505a; }
+
+#search-results {
+  position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 50;
+  background: $panel-2; border: 1px solid $border; border-radius: $radius;
+  box-shadow: $shadow; overflow: hidden; display: none;
+}
+#search-results.open { display: block; }
+#search-results a {
+  display: block; padding: 0.65rem 0.9rem; color: $text;
+  text-decoration: none; border-left: 2px solid transparent;
+  font-family: $mono; font-size: 0.85rem;
+}
+#search-results a:hover { background: rgba(64, 136, 224, 0.08); border-left-color: $accent; color: $cold; }
+#search-results .meta { color: $text-dim; font-size: 0.72rem; }
+#search-results .empty { padding: 0.8rem 0.9rem; color: $text-dim; font-family: $mono; font-size: 0.82rem; }
+
+/* ===== 文章列表（保留左序号，去 hover 位移） ===== */
+.feed-head {
+  font-family: $mono; font-size: 0.72rem; letter-spacing: 2px; color: $text-dim;
+  text-transform: uppercase; margin: 0 0 1rem;
+  display: flex; align-items: center; gap: 0.6rem;
+}
+.feed-head::after { content: ""; flex: 1; height: 1px; background: $border; }
+
+.post {
+  position: relative; display: grid;
+  grid-template-columns: 64px 1fr auto; gap: 0.2rem 1rem; align-items: baseline;
+  padding: 1.1rem 1rem 1.1rem 1.2rem; margin-bottom: 0.7rem;
+  background: $panel; border: 1px solid $border; border-radius: $radius;
+  border-left: 2px solid transparent;
+  transition: border-color 0.2s $ease, background 0.2s $ease;
+}
+.post::before {
+  content: attr(data-id); grid-row: 1 / span 2; grid-column: 1;
+  font-family: $mono; font-size: 0.72rem; color: #3f454e; align-self: center;
+}
+.post:hover { background: $panel-2; border-left-color: $accent; } /* 只换色，不位移 */
+.post .stamp { font-family: $mono; font-size: 0.72rem; color: $text-dim; grid-column: 2; }
+.post .stamp .code { color: $ok; }
+.post h2 { grid-column: 2; font-size: 1.2rem; margin: 0.15rem 0 0; }
+.post h2 a { color: $cold; text-decoration: none; }
+.post:hover h2 a { color: $accent; }
+.post .tags { grid-column: 2; margin-top: 0.45rem; display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.post .tag {
+  font-family: $mono; font-size: 0.66rem; letter-spacing: 0.5px; text-transform: uppercase;
+  color: $text-dim; border: 1px solid $border; border-radius: 3px; padding: 0.1em 0.5em;
+  transition: border-color 0.2s $ease;
+}
+.post .arrow {
+  grid-column: 3; grid-row: 1 / span 3; align-self: center;
+  font-family: $mono; color: #3f454e; transition: color 0.2s $ease;
+}
+.post:hover .arrow { color: $accent; }
+
+/* ===== 文章阅读页 ===== */
+.read-bar {
+  position: fixed; top: 34px; left: 0; height: 2px; width: 100%;
+  background: $accent; transform: scaleX(0); transform-origin: left; z-index: 9500;
+}
+.article { max-width: 720px; }
+.article .meta-row {
+  font-family: $mono; font-size: 0.74rem; color: $text-dim;
+  display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; margin-bottom: 1.4rem;
+  padding-bottom: 1rem; border-bottom: 1px dashed $border;
+}
+.article .meta-row .ok { color: $ok; }
+.article h1 { font-size: clamp(1.7rem, 5vw, 2.5rem); color: $cold; margin-bottom: 0.4rem; }
+.article h2 {
+  margin: 2.2rem 0 0.8rem; color: $cold; font-size: 1.35rem;
+  border-left: 3px solid $accent; padding-left: 0.7rem;
+}
+.article h3 { margin: 1.6rem 0 0.6rem; color: $cold; font-size: 1.1rem; }
+.article p { margin: 1rem 0; }
+.article ul, .article ol { margin: 1rem 0 1rem 1.4rem; }
+.article li { margin: 0.3rem 0; }
+.article blockquote {
+  border-left: 2px solid $accent; background: $panel; margin: 1.4rem 0;
+  padding: 0.6rem 1rem; color: $text-dim; border-radius: 0 $radius $radius 0;
+}
+.article img { max-width: 100%; border: 1px solid $border; border-radius: $radius; }
+.back { font-family: $mono; font-size: 0.8rem; display: inline-block; margin: 2.5rem 0 1rem; }
+
+/* ===== 页脚（去闪烁光标） ===== */
+.site-foot {
+  margin-top: 4rem; padding: 1.6rem 0 3rem;
+  border-top: 1px solid $border;
+  font-family: $mono; font-size: 0.74rem; color: $text-dim;
+  display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; align-items: center;
+}
+
+/* ===== 移动端 ===== */
+@media (max-width: 560px) {
+  .post { grid-template-columns: 1fr auto; }
+  .post::before { display: none; }
+  .post .stamp, .post h2, .post .tags { grid-column: 1; }
+}
+
+
+
+
+/* =========================================================
+   READING COMFORT PATCH
+   治：引用块难受 / 正文太小 / 一行太长
+   追加在 _components.scss 末尾，无需改其它文件
+   ========================================================= */
+
+/* 1) 正文字号 + 行高整体上调，中文长文更耐读 */
+body {
+  font-size: 17px;
+  line-height: 1.8;
+}
+
+/* 2) 把“整篇正文容器”收成居中阅读列（命中即整块居中窄，最干净）
+      用 class 网 + :where()，特异性 0，靠“没人跟它抢 max-width”生效，
+      且不会误伤首页 .post 卡片 */
+:where(.article, .post-content, .content, .post-body, .entry-content) {
+  max-width: 720px;
+  margin-inline: auto;
+}
+
+/* 3) 行宽兜底：哪怕上面那条没命中，每行也限在舒适字数，
+      并补上断词，杜绝英文/长串顶边溢出 */
+:where(article, main, .article, .post-content, .content, .post-body, .entry-content)
+  :where(p, li) {
+  max-width: 39em;            /* 中文约 39 字 / 行 */
+  font-size: 1.0625rem;
+  line-height: 1.9;
+  margin: 1.15rem 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* 4) 引用块重做 —— 提亮、放大、加内边距、松行距、防贴边
+      用“容器+元素”双层选择器，特异性高于主题的裸 blockquote，保证赢 */
+.article blockquote,
+article blockquote,
+.post-content blockquote,
+.content blockquote,
+.post-body blockquote,
+.entry-content blockquote {
+  max-width: 41em;
+  margin: 1.6rem 0;
+  padding: 1.15rem 1.5rem 1.15rem 1.4rem;  /* 右侧给足呼吸，不再顶边 */
+  background: $panel;
+  border-left: 3px solid $accent;
+  border-radius: 0 6px 6px 0;
+  color: #c4ccd6;                          /* 比 text-dim 亮一档，告别灰蒙蒙 */
+  font-size: 1.0625rem;
+  line-height: 1.95;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  transition: background .2s $ease, border-left-color .2s $ease;
+}
+.article blockquote:hover,
+article blockquote:hover,
+.post-content blockquote:hover,
+.content blockquote:hover,
+.post-body blockquote:hover,
+.entry-content blockquote:hover {
+  background: $panel-2;
+  border-left-color: $cold;                /* 克制的活反馈，不骚 */
+}
+/* 引用块里多段落时的段间距 */
+.article blockquote p, article blockquote p,
+.post-content blockquote p, .content blockquote p { margin: 0; }
+.article blockquote p + p, article blockquote p + p,
+.post-content blockquote p + p, .content blockquote p + p { margin-top: .8rem; }
+
+/* 5) 标题略放大，跟放大后的正文重新拉开层级 */
+.article h1, article h1 { font-size: clamp(1.9rem, 5vw, 2.7rem); }
+.article h2, article h2 { font-size: 1.45rem; }
+.article h3, article h3 { font-size: 1.18rem; }
+
+/* === reading comfort fix —— 针对 post.html 的 <article class="article"> DOM === */
+
+body { font-size: 17px; line-height: 1.85; }
+
+.article {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.article p {
+  font-size: 1.0625rem;
+  line-height: 1.9;
+  margin: 1.1rem 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.article blockquote {
+  margin: 1.6rem 0;
+  padding: 1.2rem 1.6rem 1.2rem 1.4rem;   /* 右侧给足气口，不再顶边 */
+  background: $panel;
+  border-left: 3px solid $accent;
+  border-radius: 0 6px 6px 0;
+  color: #c8d0da;                          /* 比灰蒙蒙的 text-dim 亮一档 */
+  font-size: 1.0625rem;
+  line-height: 2;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.article blockquote p { margin: 0; }
+.article blockquote p + p { margin-top: .85rem; }

@@ -1,0 +1,19 @@
+---
+layout: default
+---
+<section class="dpck-home">
+  <div class="terminal-output">
+    <p>> INITIALIZING FEED...</p>
+    <p>> LOADING ENTRIES: {{ site.posts.size }} FOUND</p>
+    <p>> STATUS: <span style="color:var(--accent)">ACTIVE</span></p>
+  </div>
+
+  <ul class="entry-list">
+    {% for post in site.posts %}
+    <li class="entry-item">
+      <span class="entry-date">[{{ post.date | date: "%Y-%m-%d" }}]</span>
+      <a href="{{ post.url | relative_url }}" class="entry-link">{{ post.title }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
