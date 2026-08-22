@@ -11,7 +11,7 @@
         var stored = window.localStorage.getItem('site-theme');
         var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         var isDark = stored === 'dark' || (!stored && prefersDark);
-        if (isDark) document.body.classList.add('dark-mode');
+        if (isDark) document.documentElement.classList.toggle('dark-mode', isDark);
       } catch (e) {
         // ignore storage access errors
       }

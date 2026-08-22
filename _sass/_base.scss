@@ -83,7 +83,8 @@ code {
 }
 
 pre {
-  background: #f8f1e7;
+  background: var(--code-bg, #f8f1e7);
+  color: var(--code-text, var(--text));
   border: 1px solid $border;
   padding: 1rem 1.1rem;
   overflow-x: auto;
@@ -92,6 +93,9 @@ pre {
   margin: 1.6rem 0;
 }
 pre code { background: none; border: 0; padding: 0; }
+
+.dark-mode code { background: rgba(255,255,255,.08); }
+.dark-mode pre { --code-bg: #0b1220; --code-text: #dbeafe; }
 
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: $bg; }

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-labelledby="title desc">
+  <title id="title">Base address and offset layout</title>
+  <desc id="desc">Three buildings share the same register offsets: control zero, status one, and data two.</desc>
+  <rect width="900" height="620" fill="#111315"/>
+  <g stroke="#292d31" stroke-width="2" opacity=".8">
+    <path d="M0 50h900M0 100h900M0 150h900M0 200h900M0 250h900M0 300h900M0 350h900M0 400h900M0 450h900M0 500h900M0 550h900"/>
+    <path d="M50 0v620M100 0v620M150 0v620M200 0v620M250 0v620M300 0v620M350 0v620M400 0v620M450 0v620M500 0v620M550 0v620M600 0v620M650 0v620M700 0v620M750 0v620M800 0v620M850 0v620"/>
+  </g>
+  <g stroke="#f5f7fb" stroke-width="2" fill="none">
+    <path d="M80 500H820l-12-7m12 7-12 7"/>
+    <path d="M120 560V40l-7 12m7-12 7 12"/>
+    <path d="M210 180v320M410 180v320M610 180v320" stroke-dasharray="3 9"/>
+    <path d="M150 180h460M150 260h460M150 360h460" stroke-dasharray="3 9"/>
+  </g>
+  <g fill="#f5f7fb" font-family="sans-serif" font-size="18">
+    <text x="755" y="545">Base address</text>
+    <text x="45" y="72">Offset</text>
+    <text x="78" y="188">Data +2</text>
+    <text x="78" y="268">Status +1</text>
+    <text x="78" y="368">Control +0</text>
+    <text x="165" y="520">UART 1</text>
+    <text x="365" y="520">UART 2</text>
+    <text x="565" y="520">UART 3</text>
+  </g>
+  <g fill="#60a5fa" font-family="monospace" font-size="16">
+    <text x="150" y="575">100</text>
+    <text x="350" y="575">200</text>
+    <text x="550" y="575">300</text>
+  </g>
+</svg>

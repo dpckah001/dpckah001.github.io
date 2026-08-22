@@ -51,15 +51,16 @@
   /* theme toggle button */
   var themeButton = document.getElementById('theme-toggle');
   if (themeButton) {
+    var themeRoot = document.documentElement;
     var setTheme = function (dark) {
-      document.body.classList.toggle('dark-mode', dark);
+      themeRoot.classList.toggle('dark-mode', dark);
       themeButton.textContent = dark ? '☀️' : '🌙';
       try { window.localStorage.setItem('site-theme', dark ? 'dark' : 'light'); } catch (e) {}
     };
     themeButton.addEventListener('click', function () {
-      setTheme(!document.body.classList.contains('dark-mode'));
+      setTheme(!themeRoot.classList.contains('dark-mode'));
     });
-    if (document.body.classList.contains('dark-mode')) {
+    if (themeRoot.classList.contains('dark-mode')) {
       themeButton.textContent = '☀️';
     }
   }
