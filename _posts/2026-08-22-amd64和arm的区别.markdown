@@ -1,0 +1,1221 @@
+---
+layout: post
+title:  "amd64和arm架构的区别"
+date:   2026-08-22 19:52:00 +0800
+categories: tech
+tags: [amd64,arm,pwntools,arch]
+---
+
+# 缘由
+前几天在跟着一个教程学习ctf的时候，发现一个很奇怪的现象。当我为了去完成题目而抄录视频的代码时，发现明明代码是arch="arm64"，但是确实能在x86_64位系统下运行。我搜索了一下，发现pwntools这款工具中的context 设置是仅仅类似于"希望程序能够对于不同的系统作出反应"，而不是限制只能怎么样。
+
+# 解决 
+在详细看了结果后，发现这款工具实际上使用arch="arm64"的行为.
+```python
+
+from pwn import *
+
+context.arch = 'arm64'
+
+p = process("./x86_64")
+
+```
+
+其本质还是
+x86_64 Linux
+    ⬇
+x86_64 python
+    ⬇
+pwntools
+
+当然这种操作不会影响python解释器对于架构的判断。
+也可以对python的手册中看一下，我的python版本是Python 3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0] on linux .
+
+python3拥有一个专门的脚本来检测架构，并输出 https://github.com/python/cpython/blob/3.14/Lib/platform.py
+
+其中确切而且pwntools的文档中都表述了这并不会影响python的判断。但是对于pwntools中的某些命令来说 比如asm().但是这并不会被运行，因为这是生成机器码，并没有真正执行这些arm64命令。自然这个程序通常会直接报错
+```bash
+dpkg-query: 没有找到与 *bin/aarch64*linux*-as* 相匹配的路径
+```
+但是除非你拥有QEMU用户态模拟、binfmt_misc,ARM64虚拟机，ARM64真机或者其他兼容层。这或许你可以运行他。
+
+# 引申
+当然，既然提到了这个东西，我也很想要了解一下架构的区别。
+在查阅了3本技术手册后 
+* AMD 文档是 AMD64 Architecture Programmer's Manual，当前版本资料覆盖 Vol.1–5。
+* Arm 文档是 Armv8-A Architecture Reference Manual，重点包含 AArch64 应用层、A64 指令集、系统级架构、内存模型等。
+* Intel 文档是 Intel 64 and IA-32 Software Developer's Manual，包含基础架构、指令集、系统编程和 MSR 等内容。
+
+我得到了一些内容，来作为比较明显的架构区别以及对于实际编码的应用。
+
+
+# 两者的个有特点
+
+
+| 方面      | AMD64/x86-64                    | AArch64                            |
+| ------- | ------------------------------- | ---------------------------------- |
+| 通用寄存器   | 16 个 64-bit GPR                 | 31 个 64-bit GPR                    |
+| 指令长度    | 可变长度                            | A64 固定 32-bit                      |
+| 内存操作    | 很多算术/逻辑指令可以直接操作内存               | 基本遵循 Load/Store                    |
+| 地址计算    | 非常强，Base + Index × Scale + Disp | Base + Offset / Register + Scale 等 |
+| PC 相对寻址 | RIP-relative                    | PC-relative                        |
+| 条件码     | RFLAGS 大量条件标志                   | PSTATE/条件标志体系                      |
+| 函数调用    | 强烈依赖 ABI 和寄存器/栈约定               | X0–X30 + SP/LR 体系                  |
+| 栈       | RSP                             | SP                                 |
+| 返回地址    | 通常由 CALL 压入栈                    | 通常由 BL 写入 X30                      |
+| 指令编码    | ModRM/SIB/REX/VEX/EVEX 等复杂体系    | 编码规则相对规整                           |
+| SIMD    | XMM/YMM/ZMM                     | V/Q/D/S/H/B 等 SIMD/FP 视图           |
+| 内存序     | 相对强                             | 更明确地需要考虑 barrier/acquire/release   |
+
+
+因为amd的很多历史问题，导致他的一些规范和旧有的部分在实际开发中会表现出复杂的感觉，相较于arm64这种比较新的架构就没有那么统一和规范。
+
+# 寄存器区别
+因为amd64是继承了x86架构的寄存器体系，所以他的寄存器体系就表现出这种
+```
+RAX
+RBX
+RCX
+RDX
+RSI
+RDI
+RBP
+RSP
+R8
+R9
+R10
+R11
+R12
+R13
+R14
+R15
+```
+AMD 文档特别强调 64-bit mode 通过 REX 扩展了寄存器体系，新增 R8–R15，并把原有 GPR 扩展到 64 bit。
+
+所以如果你有涉及x86的寄存器，你就会发现类似套娃的现象。
+```
+RAX
+EAX
+AX
+AH
+AL
+```
+
+>当然，如果你有意愿想要更加对这个寄存器都是做什么，以及有什么特殊还请看下一篇博客。
+
+# ARM64(AArch64)的寄存器就显得很不一样
+```
+X0  ~ X30     64-bit
+W0  ~ W30     32-bit
+```
+这种很舒服的规范，而不是amd64的样子。
+当然，也有很特殊的情况：
+
+    R0–R30 是 31 个通用寄存器，可以作为 X0–X30 或 W0–W30 使用。
+// 比如可以通用的寄存器。
+// 而且x30有比较特殊的用途 X30 = Link Register 即作为用来保存函数的返回地址
+
+# 四、CALL/RET 的思维方式完全不同
+
+在 x86-64 中：
+
+```asm
+call function
+```
+
+本质上会把返回地址放到栈上，然后跳转。
+
+所以你在调试的时候经常会看到：
+
+```text
+RIP
+RSP
+[stack]
+```
+
+之间的关系。
+
+这也是为什么 x86-64 的栈、返回地址、栈溢出、ROP 等东西非常重要。
+
+---
+
+而 AArch64 的典型函数调用：
+
+```asm
+bl function
+```
+
+会把返回地址放入：
+
+```text
+X30
+```
+
+然后：
+
+```asm
+ret
+```
+
+返回。
+
+所以你在 AArch64 汇编里经常看到：
+
+```asm
+BL  function
+...
+RET
+```
+
+以及：
+
+```asm
+X30
+```
+
+这就是一个非常重要的逆向区别。
+
+Arm 手册直接把 X30 定义为 procedure call link register。
+
+---
+
+# 五、这对你实际写 C/C++ 有什么影响？
+
+例如：
+
+```c
+int foo(int a, int b)
+{
+    return a + b;
+}
+```
+
+在高级语言层面：
+
+```text
+a + b
+```
+
+就是：
+
+```text
+a + b
+```
+
+但编译器生成的机器代码会完全不同。
+
+你可能在 x86-64 中看到类似：
+
+```asm
+mov eax, edi
+add eax, esi
+ret
+```
+>当然这里要提一下CPU对于这些数据的处理会尽可能的希望你所写或者编译的这些机器码会尽可能的短。(对于速度和优先级来说 寄存器>cache>内存，这也就是为什么cpu的缓存越多越大越好，当然也越贵)
+>对于cpu是如何处理的，也可以去看一下B站的一个视频[Link](https://www.bilibili.com/video/BV14wRzBoEWj?t=6.3)
+
+而 AArch64 可能类似：
+
+```asm
+add w0, w0, w1
+ret
+```
+
+因此：
+
+> **C/C++ 源代码不是架构无关的最终执行形式。**
+
+真正执行的时候：
+
+```text
+C/C++
+   ↓
+编译器
+   ↓
+目标架构 ISA
+   ↓
+机器码
+```
+
+---
+
+# 六、第二个巨大区别：内存操作
+
+这是我认为**程序员最应该理解的区别之一**。
+
+AMD64/x86 的寻址能力非常强。
+
+例如 AMD 文档里的 ModRM/SIB 体系允许形成各种：
+
+```text
+base
+base + displacement
+base + index
+base + index * scale
+base + index * scale + displacement
+```
+
+> offset / displacement 即偏移或位移 (可以阅读我的博客的中 “如何理解偏移这篇文章”)
+AMD 的文档直接描述了 ModRM 和 SIB 如何参与寄存器间接寻址和地址计算。
+
+所以你可以看到类似：
+
+```asm
+mov eax, [rax + rbx*4 + 0x10]
+```
+
+这种非常“x86”的东西。
+
+这对于：
+
+```c
+array[i]
+```
+
+特别方便。
+
+因为：
+
+```c
+array[i]
+```
+
+本质就是：
+
+```text
+base + i * sizeof(element)
+```
+
+x86 可以非常直接地表达这种地址。
+
+---
+
+# 七、AArch64 的寻址思路更规整
+
+AArch64 也并不是只能：
+
+```text
+[register]
+```
+
+它同样支持：
+
+```text
+base + immediate
+base + register
+base + scaled register
+```
+
+以及：
+
+```text
+pre-index
+post-index
+```
+
+Arm 手册列出了这些 load/store addressing modes。
+
+例如：
+
+```asm
+ldr x0, [x1, #8]
+```
+
+或者：
+
+```asm
+ldr x0, [x1, x2, lsl #3]
+```
+
+这同样可以表达：
+
+```c
+x1[x2]
+```
+
+但整体规则更加规整。
+
+---
+
+# 这会直接影响编译器生成的汇编
+
+假设：
+
+```c
+int x = array[i];
+```
+
+x86-64 很可能直接出现：
+
+```asm
+mov eax, DWORD PTR [rax + rcx*4]
+```
+
+AArch64 则可能出现：
+
+```asm
+ldr w0, [x1, x2, lsl #2]
+```
+
+所以以后你看到：
+
+```text
+[rax + rcx*4]
+```
+
+和：
+
+```text
+[x1, x2, lsl #2]
+```
+
+
+它们反映的是**两套不同的 ISA 地址生成模型**。
+
+---
+
+# 九、第三个特别重要的区别：PC-relative addressing
+
+这个对于现代程序非常重要。
+
+## AMD64
+
+AMD64 支持：
+
+```text
+RIP-relative addressing
+```
+
+AMD 文档明确说明，这种方式对于：
+
+* position-independent code
+* global data
+
+非常重要。
+
+所以你在 Linux ELF、PIE、共享库、动态链接程序中经常看到：
+
+```asm
+mov rax, [rip + offset]
+```
+
+这实际上就是：
+
+```text
+当前指令地址 + offset
+```
+
+去寻找数据。
+
+这也是你以后做：
+
+* ELF 分析
+* PIE
+* ASLR
+* 逆向
+* GDB
+* shellcode
+* 动态链接
+
+时非常重要的知识。
+
+---
+
+# 十、AArch64 也非常重视 PC-relative
+
+AArch64 有明确的 PC-relative addressing。
+
+Arm 文档列出了：
+
+```text
+PC-relative literal loads
+unconditional branches
+branch and link
+PC-relative load/store
+address generation
+```
+
+并且给出了对应的范围。
+
+因此在 AArch64 逆向时，你也会经常看到：
+
+```asm
+adr
+adrp
+ldr
+```
+
+这样的组合。
+
+例如：
+
+```asm
+adrp x0, ...
+add  x0, x0, ...
+```
+
+经常是在构造一个全局变量/静态数据/函数地址。
+
+---
+
+# 十一、第四个非常重要的区别：指令长度
+
+这是如果你做逆向时特别明显的区别。
+
+## x86-64
+
+x86 指令是：
+
+> **可变长度**
+
+可能：
+
+```text
+1 byte
+2 bytes
+3 bytes
+...
+```
+
+甚至更长。
+
+而且还存在：
+
+```text
+REX
+VEX
+EVEX
+ModRM
+SIB
+immediate
+displacement
+```
+
+等编码组件。
+
+AMD 文档对 ModRM/SIB 编码体系有非常详细的规定。
+
+所以 x86 反汇编有时候非常复杂。
+
+---
+
+## AArch64
+
+A64 指令基本采用：
+
+```text
+32 bit
+```
+
+固定宽度。
+
+这会带来一个非常明显的好处：
+
+```text
+一条指令 = 4 bytes
+```
+
+在分析：
+
+```text
+.text
+```
+
+的时候，你会发现 AArch64 的指令边界非常规整。
+
+因此：
+
+```text
+x86-64:
+48 89 e5
+48 83 ec 20
+...
+
+AArch64:
+xxxx xxxx
+xxxx xxxx
+xxxx xxxx
+```
+
+这种感觉会很不同。
+
+---
+
+# 十二、第五个巨大区别：内存模型
+
+这个是**写多线程程序的人非常值得认真理解的东西**。
+
+AArch64 文档专门把：
+
+```text
+Atomicity
+Memory model
+Caches
+Alignment
+Endian
+Synchronization
+Semaphores
+```
+
+作为应用级内存模型的重要组成部分。
+
+而且 AArch64 有非常明确的：
+
+```text
+DMB
+DSB
+ISB
+Load-Acquire
+Store-Release
+```
+
+等机制。
+
+例如：
+
+```asm
+dmb
+```
+
+的作用是建立特定内存访问之间的顺序关系。Arm 文档明确指出 DMB 用于保证 barrier 前后的相关 memory accesses 的相对顺序。
+
+---
+
+## 为什么这对 C++ 程序员重要？
+
+例如：
+
+```cpp
+std::atomic<int> x;
+```
+
+你可能以为：
+
+```cpp
+x.store(1);
+```
+
+就是简单的：
+
+```text
+MOV
+```
+
+但实际上：
+
+```text
+C++ memory model
+        ↓
+compiler memory model
+        ↓
+target ISA memory model
+        ↓
+CPU
+```
+
+中间有很多层。
+
+尤其是：
+
+```cpp
+memory_order_relaxed
+memory_order_acquire
+memory_order_release
+memory_order_seq_cst
+```
+
+这些东西在不同 ISA 上最终可能生成不同的机器指令组合。
+
+**这是理解 ARM 与 x86 并发性能差异非常重要的一扇门。**
+
+---
+
+# 十四、因此不要形成一个错误认识
+
+很多初学者会认为：
+
+> “我的程序在 x86 Linux 上没问题，所以在 ARM Linux 上也应该没问题。”
+
+这是非常危险的。
+
+特别是：
+
+```text
+多线程
+lock-free
+atomic
+memory ordering
+device driver
+kernel
+DMA
+MMIO
+```
+
+这些领域。
+
+Arm 手册甚至专门区分：
+
+```text
+DMB
+DSB
+ISB
+```
+
+而且 DMB 和 DSB 并不是同一回事。
+
+---
+
+# 十五、第六个区别：栈（stack）
+
+AArch64 对 SP 有比较明确的规则。
+
+Arm 文档指出：
+
+```text
+SP = dedicated Stack Pointer
+```
+
+并涉及 16-byte stack alignment。
+
+这对于：
+
+```text
+函数调用
+局部变量
+结构体
+SIMD
+异常处理
+调试
+ABI
+```
+
+都非常重要。
+
+而 x86-64 也是高度依赖 RSP 的：
+
+```asm
+push
+pop
+call
+ret
+```
+
+体系。
+
+但是由于 x86 历史兼容性非常强，你会同时遇到：
+
+```text
+16-bit
+32-bit
+64-bit
+segment
+legacy mode
+compatibility mode
+long mode
+```
+
+等历史机制。
+
+AMD 文档明确说明 long mode 又分：
+
+```text
+64-bit mode
+compatibility mode
+```
+
+并且 compatibility mode 用来支持旧的 16/32-bit 应用。
+
+这就是 x86 最大的一个特点 
+> shit of the logic
+
+---
+
+# 十六、第七个区别：条件码/FLAGS
+
+x86 有：
+
+```text
+RFLAGS
+```
+
+其中包括：
+
+```text
+ZF
+CF
+SF
+OF
+...
+```
+
+大量指令都会修改这些 flags。
+
+例如：
+
+```asm
+cmp rax, rbx
+je  somewhere
+```
+
+实际上：
+
+```text
+cmp
+ ↓
+修改 FLAGS
+ ↓
+je 读取 ZF
+```
+
+AMD 文档中甚至有完整的 instruction effects on RFLAGS 表。
+
+这也是为什么 x86 汇编里经常看到：
+
+```asm
+cmp
+test
+jz
+jnz
+jg
+jl
+ja
+jb
+```
+
+这种组合。
+
+---
+
+## AArch64 的条件执行思路不完全一样
+
+AArch64 也有：
+
+```text
+N
+Z
+C
+V
+```
+
+等条件标志，但整体指令设计更加规整。
+
+而且 AArch64 大量使用：
+
+```asm
+cmp
+b.eq
+b.ne
+b.gt
+b.lt
+```
+
+以及：
+
+```text
+conditional select
+```
+
+等机制。
+
+所以逆向时，你会逐渐发现：
+
+```text
+x86：
+cmp + jcc
+
+ARM：
+cmp + b.<condition>
+```
+
+虽然逻辑类似，但 ISA 思维方式不同。
+
+---
+
+# 十八、第八个区别：SIMD
+
+这一点对于：
+
+```text
+图像处理
+视频编码
+音频
+机器学习
+密码学
+科学计算
+游戏
+高性能计算
+```
+
+特别重要。
+
+Intel/AMD 文档中有：
+
+```text
+MMX
+SSE
+SSE2
+AVX
+AVX2
+AVX-512
+XMM
+YMM
+ZMM
+```
+
+等体系。
+
+Intel 文档明确讨论了 XMM、SSE2 以及 SIMD 数据的加载、保存和对齐等问题。
+
+---
+
+AArch64 则有：
+
+```text
+V0–V31
+```
+
+并可以解释为：
+
+```text
+B
+H
+S
+D
+Q
+```
+
+不同宽度。
+
+Arm 手册明确给出了：
+
+```text
+V0-V31
+Q0-Q31
+D0-D31
+S0-S31
+H0-H31
+B0-B31
+```
+
+这些视图。
+
+所以写 SIMD 优化代码时：
+
+```text
+x86 SIMD
+```
+
+和：
+
+```text
+NEON/AArch64 SIMD
+```
+
+不能直接把汇编一比一搬过去。
+
+---
+
+# 十九、一个程序员特别应该注意的事情：C 类型不等于 CPU 类型
+
+例如：
+
+```c
+long x;
+```
+
+你不能仅仅看到：
+
+```text
+64-bit CPU
+```
+
+就认为：
+
+```text
+long = 64 bit
+```
+
+因为：
+
+```text
+CPU architecture
+≠
+OS ABI
+≠
+compiler ABI
+≠
+C language type model
+```
+
+这几个概念必须分开。
+
+这也是跨：
+
+```text
+Linux x86-64
+Linux AArch64
+Windows x64
+macOS ARM64
+```
+
+开发时非常容易踩的坑。
+
+---
+
+# 二十、形成的思维模型
+
+建议以后形成的思维模型：
+
+```text
+CPU
+│
+├── ISA
+│    ├── AMD64
+│    └── AArch64
+│
+├── Microarchitecture
+│    ├── Zen
+│    ├── Core
+│    └── Apple CPU ...
+│
+├── Operating System
+│    ├── Linux
+│    ├── Windows
+│    └── macOS
+│
+├── ABI
+│    ├── calling convention
+│    ├── stack layout
+│    ├── register usage
+│    └── binary interface
+│
+├── Compiler
+│    ├── GCC
+│    ├── Clang
+│    └── MSVC
+│
+└── Program
+     ├── C
+     ├── C++
+     ├── Rust
+     └── Python
+```
+
+**不要把这些东西混在一起。**
+
+---
+
+# 二十二、对于实际程序员，我认为最值得从这三本手册掌握的是这些
+
+如果你不是 CPU 设计人员，而是：
+
+> **程序员 / CTF / 逆向 / Linux / 编译器 / 系统开发**
+
+那么我会把学习优先级排成这样：
+
+### 必须掌握
+
+```text
+① 寄存器体系
+② 内存寻址
+③ 栈
+④ CALL/RET
+⑤ 函数调用
+⑥ PC-relative addressing
+⑦ Load/Store
+⑧ 指针
+⑨ 数据宽度
+⑩ 对齐
+```
+
+这些直接影响：
+
+```text
+C
+C++
+汇编
+GDB
+Pwndbg
+IDA
+Ghidra
+ELF
+PE
+```
+
+---
+
+### 非常有用
+
+```text
+① Memory Model
+② Atomic
+③ Barrier
+④ SIMD
+⑤ Cache
+⑥ Virtual Memory
+⑦ Page Table
+⑧ TLB
+⑨ Exception
+⑩ System Call
+```
+
+这些对于：
+
+```text
+Linux kernel
+多线程
+高性能程序
+驱动
+逆向
+漏洞分析
+```
+
+非常重要。
+
+Arm 手册本身把 cache、alignment、memory attributes、atomicity、synchronization 等作为 AArch64 memory model 的核心部分。
+
+---
+
+### 深入系统开发再学
+
+```text
+MSR
+CR0/CR3/CR4
+MMU
+TLB
+Exception Level
+EL0/EL1/EL2/EL3
+Virtualization
+Debug architecture
+Performance Monitor
+Memory Tagging
+Pointer Authentication
+```
+
+AArch64 手册的系统级部分就专门涵盖：
+
+```text
+Exception Levels
+Execution State
+Security State
+Virtualization
+Exception entry/return
+System calls
+Debug
+Memory System
+Virtual Memory
+TLB
+MTE
+Performance Monitor
+```
+
+
+
+---
+
+# 二十三、对于会碰 CTF/逆向的人，可以记住的对照
+
+我建议以后看到汇编，脑子里可以建立这个表：
+
+| 概念          | AMD64           | AArch64             |
+| ----------- | --------------- | ------------------- |
+| PC          | RIP             | PC                  |
+| SP          | RSP             | SP                  |
+| 返回地址        | 通常在栈            | X30/LR              |
+| 普通寄存器       | RAX...R15       | X0...X30            |
+| 32-bit      | EAX             | W0                  |
+| 64-bit      | RAX             | X0                  |
+| 条件标志        | RFLAGS          | NZCV/PSTATE         |
+| 内存读取        | `mov rax,[...]` | `ldr x0,[...]`      |
+| 内存写入        | `mov [...],rax` | `str x0,[...]`      |
+| 函数调用        | `call`          | `bl`                |
+| 函数返回        | `ret`           | `ret`               |
+| PC-relative | RIP-relative    | ADR/ADRP 等          |
+| 地址计算        | ModRM/SIB       | base + offset/index |
+| 指令长度        | variable        | 32-bit A64          |
+| SIMD        | XMM/YMM/ZMM     | V/Q/D/S/H/B         |
+| 栈           | RSP             | SP                  |
+
+---
+
+
+# 二十四、另一个非常实用的地方：指针
+
+在 AArch64 文档中，AArch64 支持 64-bit virtual addresses，但实际有效 VA 范围取决于实现和 MMU 配置；高位还可能涉及 tag、PAC 等机制。
+
+这意味着：
+
+> **“64-bit CPU” ≠ “所有 64 个 bit 都能随便当地址用”。**
+
+这对于：
+
+```text
+指针
+地址计算
+ASLR
+虚拟内存
+Pointer Authentication
+Memory Tagging
+```
+
+都非常重要。
+
+---
+
+# 二十六、最后一个我认为可以建立的“架构图”
+
+以后遇到任何一个底层问题，可以按这个顺序问自己：
+
+```text
+                程序
+                 │
+                 ▼
+              C / C++
+                 │
+                 ▼
+              Compiler
+                 │
+                 ▼
+               ABI
+                 │
+        ┌────────┴────────┐
+        ▼                 ▼
+      AMD64             AArch64
+        │                 │
+   ┌────┼────┐       ┌────┼────┐
+   ▼    ▼    ▼       ▼    ▼    ▼
+Register Memory ISA Register Memory ISA
+   │    │    │       │    │    │
+   └────┴────┴───────┴────┴────┘
+                 │
+                 ▼
+             Machine Code
+                 │
+                 ▼
+                 CPU
+```
+
+
+## 如果按照“程序员真正有用”的角度，我建议你接下来重点读这 8 个主题
+
+**肯定不能够把成千上万 页全部看完。(当然你要是有系统记得带带我)**
+
+按这个顺序最划算：
+
+1. **AMD64 vs AArch64 寄存器**
+2. **寻址方式**
+3. **Stack / CALL / RET**
+4. **ABI / Calling Convention**
+5. **指令编码**
+6. **Virtual Memory / Page Table / TLB**
+7. **Memory Model / Atomic / Barrier**
+8. **SIMD / Vector**
+
+其中 **1～5 对 CTF、逆向、GDB、汇编尤其有用；6～8 对系统编程、内核、多线程和性能优化尤其有用。**
+
+
+> 当然了，本文可能会使用ai辅助来画思维图或者部分知识点。因为有些部分我也没有系统的学过，只是可能之前了解过，有一点印象。
+> 所以如果你觉得ai味道有些浓或者对这篇文章反感的话还请说明，因为我本人也对于ai文很反胃，当然也之前在别人的博客讨论过，但是无奈。古法处理这些枯燥的内容确实比不上ai的处理，确实能够处理的更快。
+> 当然这篇博客我会一直更新内容的，一旦在学习或工作中有了新的想法或者理解，我会补充或修改的。（bxwp please）
+
+
