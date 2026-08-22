@@ -35,6 +35,31 @@
     onScroll();
   }
 
+  /* Build a table of contents from the rendered article headings. */
+  var article = document.querySelector('.article');
+  var toc = document.getElementById('article-toc');
+  if (article && toc) {
+    var tocList = toc.querySelector('ol');
+    var headings = article.querySelectorAll('.article-content h1, .article-content h2, .article-content h3');
+    var slugCounts = {};
+    headings.forEach(function (heading) {
+      var baseSlug = heading.textContent.trim().toLowerCase()
+        .replace(/[^\w\u4e00-\u9fff\s-]/g, '').replace(/[\s-]+/g, '-');
+      var slug = baseSlug || 'section';
+      slugCounts[slug] = (slugCounts[slug] || 0) + 1;
+      if (slugCounts[slug] > 1) slug += '-' + slugCounts[slug];
+      heading.id = heading.id || slug;
+      var item = document.createElement('li');
+      if (heading.tagName === 'H3') item.className = 'toc-subitem';
+      var link = document.createElement('a');
+      link.href = '#' + heading.id;
+      link.textContent = heading.textContent;
+      item.appendChild(link);
+      tocList.appendChild(item);
+    });
+    if (!headings.length) toc.hidden = true;
+  }
+
   /* rare ambient glitch on the homepage title — dedsec pulse, mostly still */
   if (!reduce) {
     var g = document.querySelector('.site-head .glitch');

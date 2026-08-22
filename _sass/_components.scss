@@ -126,6 +126,20 @@
 .article h2 { margin: 2rem 0 .8rem; color: $cold; font-size: 1.15rem; font-weight: 600; border-left: 4px solid $accent; padding-left: .8rem; }
 .article h3 { margin: 1.4rem 0 .6rem; color: $cold; font-size: 1rem; font-weight: 600; }
 .article p { margin: 1rem 0; font-size: 1rem; line-height: 1.8; }
+.article-toc {
+  background: $panel;
+  border: 1px solid $border;
+  border-left: 4px solid $accent;
+  margin: 1.4rem 0 2rem;
+  padding: .9rem 1.2rem;
+}
+.article-toc-title { color: $cold; font-family: $display; font-weight: 600; margin-bottom: .35rem; }
+.article-toc ol { margin: 0; padding-left: 1.3rem; }
+.article-toc li { margin: .2rem 0; padding-left: .2rem; }
+.article-toc .toc-subitem { margin-left: 1rem; font-size: .92em; }
+.article-toc a { color: $text-dim; text-decoration: none; }
+.article-toc a:hover { color: $accent; text-decoration: underline; }
+.snippet { color: $text-dim; font-size: .82em; line-height: 1.5; }
 .article ul, .article ol { margin: 1rem 0 1rem 1.4rem; }
 .article li { margin: .35rem 0; }
 .article blockquote { border-left: 4px solid $accent; background: $panel; margin: 1.4rem 0; padding: 1rem 1.2rem; color: #6f5847; font-size: 1rem; line-height: 1.8; }

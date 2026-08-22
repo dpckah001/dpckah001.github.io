@@ -13,7 +13,14 @@ layout: default
 
   <h1>{{ page.title }}</h1>
 
-  {{ content }}
+  <nav class="article-toc" id="article-toc" aria-label="文章目录">
+    <div class="article-toc-title">目录</div>
+    <ol></ol>
+  </nav>
+
+  <div class="article-content">
+    {{ content }}
+  </div>
 
   {% include giscus.html %}
 </article>

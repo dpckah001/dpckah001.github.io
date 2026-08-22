@@ -32,6 +32,7 @@
   function render(q) {
     q = q.trim().toLowerCase();
     if (!q) { box.classList.remove('open'); box.innerHTML = ''; return; }
+    var terms = q.split(/\s+/).filter(Boolean);
     if (!Array.isArray(data) || !data.length) {
       box.innerHTML = '<div class="empty">&gt; 无搜索索引 — 请稍后重试</div>';
       box.classList.add('open');
@@ -40,15 +41,25 @@
     var hits = data.filter(function (p) {
       var title = (p.title || '').toString().toLowerCase();
       var body = (p.body || '').toString().toLowerCase();
-      return title.indexOf(q) > -1 || body.indexOf(q) > -1;
+      var tags = (p.tags || []).join(' ').toLowerCase();
+      var haystack = title + ' ' + tags + ' ' + body;
+      return terms.every(function (term) { return haystack.indexOf(term) > -1; });
     }).slice(0, 8);
 
     if (!hits.length) {
       box.innerHTML = '<div class="empty">&gt; 未找到匹配结果</div>';
     } else {
       box.innerHTML = hits.map(function (p) {
+        var text = (p.body || '').toString().replace(/\s+/g, ' ');
+         var lowerText = text.toLowerCase();
+         var matchAt = lowerText.indexOf(terms[0]);
+         var start = matchAt > 70 ? matchAt - 70 : 0;
+         var snippet = text.slice(start, start + 150);
+         if (start > 0) snippet = '...' + snippet;
+         if (start + 150 < text.length) snippet += '...';
         return '<a role="option" href="' + p.url + '">&gt; ' + esc(p.title) +
-               '<br><span class="meta">' + esc(p.date) + '</span></a>';
+           '<br><span class="meta">' + esc(p.date) + '</span>' +
+           '<br><span class="snippet">' + esc(snippet) + '</span></a>';
       }).join('');
     }
     box.classList.add('open');
