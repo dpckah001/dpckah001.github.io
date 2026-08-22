@@ -92,10 +92,11 @@ pre {
   line-height: 1.7;
   margin: 1.6rem 0;
 }
-pre code { background: none; border: 0; padding: 0; }
+pre code { background: none; border: 0; padding: 0; color: inherit; }
 
 .dark-mode code { background: rgba(255,255,255,.08); }
-.dark-mode pre { --code-bg: #0b1220; --code-text: #dbeafe; }
+html.dark-mode pre { background: #111827; color: #e2e8f0; }
+html.dark-mode pre code { color: #e2e8f0; }
 
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: $bg; }
